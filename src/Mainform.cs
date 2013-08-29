@@ -19,6 +19,13 @@ using System.IO;
  * 
  * 2.通过release发布之后的第一个版本,在遇到找不到evergreens.lua的时候,会出现未处理异常.
  * -------------
+ * 通过搜索,C#各种退出的方式里面.备注如下:
+ * 1.this.Close();   只是关闭当前窗口，若不是主窗体的话，是无法退出程序的，另外若有托管线程（非主线程），也无法干净地退出；
+ * 2.Application.Exit();  强制所有消息中止，退出所有的窗体，但是若有托管线程（非主线程），也无法干净地退出；
+ * 3.Application.ExitThread(); 强制中止调用线程上的所有消息，同样面临其它线程无法正确退出的问题；
+ * 4.System.Environment.Exit(0);   这是最彻底的退出方式，不管什么线程都被强制退出，把程序结束的很干净。
+ * 选择第四项,感觉上很干净地解决了.
+ * 
  
  */
 
@@ -177,7 +184,7 @@ namespace src
 			else
 			{
 				MessageBox.Show("神奇的木炭模块无法载入,程序即将退出.\r\n这通常由于游戏文件受到损坏或者没有将程序放入游戏目录中导致的.");
-				this.Dispose();
+				System.Environment.Exit(0);
 				return;
 			}
 			//open?
@@ -288,8 +295,13 @@ namespace src
 
         private void button6_Click(object sender, EventArgs e)
         {
-            if(listBox1.SelectedItems.Count>0)
-                listBox1.Items.RemoveAt(listBox1.SelectedIndex);
+			if (listBox1.SelectedItems.Count > 0)
+			{
+				listBox1.Items.RemoveAt(listBox1.SelectedIndex);
+				button10.Text = "Save";
+				button10.Enabled = true;
+			}
+
         }
 
 		private void button7_Click(object sender, EventArgs e)
@@ -333,6 +345,11 @@ namespace src
 
 		private void button9_Click(object sender, EventArgs e)
 		{
+			if (listBox1.Items.Count > 0)
+			{
+				button10.Text = "Save";
+				button10.Enabled = true;
+			}
 			listBox1.Items.Clear();
 		}
 
