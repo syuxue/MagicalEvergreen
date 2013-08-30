@@ -5,12 +5,12 @@ using System.Runtime.InteropServices;
 // 有关程序集的常规信息通过以下
 // 特性集控制。更改这些特性值可修改
 // 与程序集关联的信息。
-[assembly: AssemblyTitle("src")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyTitle("WWStarve")]
+[assembly: AssemblyDescription("Simply Game Tool for Don't Starve")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("src")]
-[assembly: AssemblyCopyright("Copyright ©  2013")]
+[assembly: AssemblyCompany("Syuxue")]
+[assembly: AssemblyProduct("We Won't Starve")]
+[assembly: AssemblyCopyright("Copyright Syuxue ©  2013")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

@@ -42,7 +42,21 @@
 			this.label1 = new System.Windows.Forms.Label();
 			this.label2 = new System.Windows.Forms.Label();
 			this.timer1 = new System.Windows.Forms.Timer(this.components);
+			this.tabControl1 = new System.Windows.Forms.TabControl();
+			this.tabPage1 = new System.Windows.Forms.TabPage();
+			this.tabPage2 = new System.Windows.Forms.TabPage();
+			this.groupBox2 = new System.Windows.Forms.GroupBox();
+			this.label6 = new System.Windows.Forms.Label();
+			this.trackBar1 = new System.Windows.Forms.TrackBar();
+			this.checkBox1 = new System.Windows.Forms.CheckBox();
+			this.label5 = new System.Windows.Forms.Label();
+			this.button1 = new System.Windows.Forms.Button();
 			this.groupBox1.SuspendLayout();
+			this.tabControl1.SuspendLayout();
+			this.tabPage1.SuspendLayout();
+			this.tabPage2.SuspendLayout();
+			this.groupBox2.SuspendLayout();
+			((System.ComponentModel.ISupportInitialize)(this.trackBar1)).BeginInit();
 			this.SuspendLayout();
 			// 
 			// groupBox1
@@ -56,13 +70,11 @@
 			this.groupBox1.Controls.Add(this.label3);
 			this.groupBox1.Controls.Add(this.listBox1);
 			this.groupBox1.Controls.Add(this.label1);
-			this.groupBox1.Location = new System.Drawing.Point(12, 56);
+			this.groupBox1.Location = new System.Drawing.Point(6, 6);
 			this.groupBox1.Name = "groupBox1";
 			this.groupBox1.Size = new System.Drawing.Size(424, 347);
 			this.groupBox1.TabIndex = 14;
 			this.groupBox1.TabStop = false;
-			this.groupBox1.Text = "神奇的木炭";
-			this.groupBox1.Enter += new System.EventHandler(this.groupBox1_Enter);
 			// 
 			// button10
 			// 
@@ -139,7 +151,6 @@
 			this.listBox1.Name = "listBox1";
 			this.listBox1.Size = new System.Drawing.Size(144, 186);
 			this.listBox1.TabIndex = 3;
-			this.listBox1.SelectedIndexChanged += new System.EventHandler(this.listBox1_SelectedIndexChanged);
 			// 
 			// label1
 			// 
@@ -157,26 +168,127 @@
 			this.label2.Size = new System.Drawing.Size(35, 13);
 			this.label2.TabIndex = 15;
 			this.label2.Text = "label2";
-			this.label2.Click += new System.EventHandler(this.label2_Click);
 			// 
 			// timer1
 			// 
 			this.timer1.Enabled = true;
 			this.timer1.Tick += new System.EventHandler(this.timer1_Tick);
 			// 
+			// tabControl1
+			// 
+			this.tabControl1.Controls.Add(this.tabPage1);
+			this.tabControl1.Controls.Add(this.tabPage2);
+			this.tabControl1.Location = new System.Drawing.Point(25, 60);
+			this.tabControl1.Name = "tabControl1";
+			this.tabControl1.SelectedIndex = 0;
+			this.tabControl1.Size = new System.Drawing.Size(460, 411);
+			this.tabControl1.TabIndex = 16;
+			// 
+			// tabPage1
+			// 
+			this.tabPage1.Controls.Add(this.groupBox1);
+			this.tabPage1.Location = new System.Drawing.Point(4, 22);
+			this.tabPage1.Name = "tabPage1";
+			this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
+			this.tabPage1.Size = new System.Drawing.Size(452, 385);
+			this.tabPage1.TabIndex = 0;
+			this.tabPage1.Text = "火烧树";
+			this.tabPage1.UseVisualStyleBackColor = true;
+			// 
+			// tabPage2
+			// 
+			this.tabPage2.Controls.Add(this.groupBox2);
+			this.tabPage2.Location = new System.Drawing.Point(4, 22);
+			this.tabPage2.Name = "tabPage2";
+			this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
+			this.tabPage2.Size = new System.Drawing.Size(452, 385);
+			this.tabPage2.TabIndex = 1;
+			this.tabPage2.Text = "天赋";
+			this.tabPage2.UseVisualStyleBackColor = true;
+			// 
+			// groupBox2
+			// 
+			this.groupBox2.Controls.Add(this.button1);
+			this.groupBox2.Controls.Add(this.label6);
+			this.groupBox2.Controls.Add(this.trackBar1);
+			this.groupBox2.Controls.Add(this.checkBox1);
+			this.groupBox2.Controls.Add(this.label5);
+			this.groupBox2.Location = new System.Drawing.Point(15, 18);
+			this.groupBox2.Name = "groupBox2";
+			this.groupBox2.Size = new System.Drawing.Size(407, 348);
+			this.groupBox2.TabIndex = 0;
+			this.groupBox2.TabStop = false;
+			// 
+			// label6
+			// 
+			this.label6.AutoSize = true;
+			this.label6.Location = new System.Drawing.Point(104, 33);
+			this.label6.Name = "label6";
+			this.label6.Size = new System.Drawing.Size(35, 13);
+			this.label6.TabIndex = 3;
+			this.label6.Text = "label6";
+			// 
+			// trackBar1
+			// 
+			this.trackBar1.BackColor = System.Drawing.Color.White;
+			this.trackBar1.Location = new System.Drawing.Point(275, 32);
+			this.trackBar1.Maximum = 4;
+			this.trackBar1.Name = "trackBar1";
+			this.trackBar1.Size = new System.Drawing.Size(117, 45);
+			this.trackBar1.TabIndex = 2;
+			this.trackBar1.Scroll += new System.EventHandler(this.trackBar1_Scroll);
+			// 
+			// checkBox1
+			// 
+			this.checkBox1.AutoSize = true;
+			this.checkBox1.Location = new System.Drawing.Point(24, 32);
+			this.checkBox1.Name = "checkBox1";
+			this.checkBox1.Size = new System.Drawing.Size(74, 17);
+			this.checkBox1.TabIndex = 1;
+			this.checkBox1.Text = "自动回血";
+			this.checkBox1.UseVisualStyleBackColor = true;
+			this.checkBox1.CheckedChanged += new System.EventHandler(this.checkBox1_CheckedChanged);
+			// 
+			// label5
+			// 
+			this.label5.AutoSize = true;
+			this.label5.Location = new System.Drawing.Point(368, 317);
+			this.label5.Name = "label5";
+			this.label5.Size = new System.Drawing.Size(24, 13);
+			this.label5.TabIndex = 0;
+			this.label5.Text = "test";
+			this.label5.Visible = false;
+			this.label5.Click += new System.EventHandler(this.label5_Click);
+			// 
+			// button1
+			// 
+			this.button1.Location = new System.Drawing.Point(275, 83);
+			this.button1.Name = "button1";
+			this.button1.Size = new System.Drawing.Size(86, 50);
+			this.button1.TabIndex = 4;
+			this.button1.Text = "Save All";
+			this.button1.UseVisualStyleBackColor = true;
+			this.button1.Click += new System.EventHandler(this.button1_Click);
+			// 
 			// Mainform
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(447, 416);
+			this.ClientSize = new System.Drawing.Size(520, 483);
+			this.Controls.Add(this.tabControl1);
 			this.Controls.Add(this.label2);
-			this.Controls.Add(this.groupBox1);
 			this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
 			this.Name = "Mainform";
 			this.Text = "I won\'t Starve";
 			this.Load += new System.EventHandler(this.Mainform_Load);
 			this.groupBox1.ResumeLayout(false);
 			this.groupBox1.PerformLayout();
+			this.tabControl1.ResumeLayout(false);
+			this.tabPage1.ResumeLayout(false);
+			this.tabPage2.ResumeLayout(false);
+			this.groupBox2.ResumeLayout(false);
+			this.groupBox2.PerformLayout();
+			((System.ComponentModel.ISupportInitialize)(this.trackBar1)).EndInit();
 			this.ResumeLayout(false);
 			this.PerformLayout();
 
@@ -196,6 +308,15 @@
 		private System.Windows.Forms.ListBox listBox2;
 		private System.Windows.Forms.Button button7;
 		private System.Windows.Forms.Button button10;
+		private System.Windows.Forms.TabControl tabControl1;
+		private System.Windows.Forms.TabPage tabPage1;
+		private System.Windows.Forms.TabPage tabPage2;
+		private System.Windows.Forms.GroupBox groupBox2;
+		private System.Windows.Forms.Label label5;
+		private System.Windows.Forms.CheckBox checkBox1;
+		private System.Windows.Forms.TrackBar trackBar1;
+		private System.Windows.Forms.Label label6;
+		private System.Windows.Forms.Button button1;
     }
 }
 

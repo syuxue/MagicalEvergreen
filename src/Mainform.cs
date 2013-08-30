@@ -20,11 +20,13 @@ using System.IO;
  * 2.通过release发布之后的第一个版本,在遇到找不到evergreens.lua的时候,会出现未处理异常.
  * -------------
  * 通过搜索,C#各种退出的方式里面.备注如下:
- * 1.this.Close();   只是关闭当前窗口，若不是主窗体的话，是无法退出程序的，另外若有托管线程（非主线程），也无法干净地退出；
- * 2.Application.Exit();  强制所有消息中止，退出所有的窗体，但是若有托管线程（非主线程），也无法干净地退出；
- * 3.Application.ExitThread(); 强制中止调用线程上的所有消息，同样面临其它线程无法正确退出的问题；
- * 4.System.Environment.Exit(0);   这是最彻底的退出方式，不管什么线程都被强制退出，把程序结束的很干净。
+ * **1.this.Close();   只是关闭当前窗口，若不是主窗体的话，是无法退出程序的，另外若有托管线程（非主线程），也无法干净地退出；
+ * **2.Application.Exit();  强制所有消息中止，退出所有的窗体，但是若有托管线程（非主线程），也无法干净地退出；
+ * **3.Application.ExitThread(); 强制中止调用线程上的所有消息，同样面临其它线程无法正确退出的问题；
+ * **4.System.Environment.Exit(0);   这是最彻底的退出方式，不管什么线程都被强制退出，把程序结束的很干净。
  * 选择第四项,感觉上很干净地解决了.
+ * 
+ * 3.在Regen_chk里面没有对注释过的Regen进行判定,如果player_common.lua里面已经有注释过的,也会被判定为有自动回血.
  * 
  
  */
@@ -72,9 +74,18 @@ namespace src
 							  "橙色魔杖","黄色魔杖",/*Index73, Version:19*/"绿宝石","绿色护符","多功能斧头",/*70-74*/
 							  "远古短棍","远古战甲","啜食者皮","啜食者盔甲","铥矿石"};
 
-		string Str_full;
+		string Str_full;			//火烧树模块使用
+		string Str_Regen;			//天赋自动回血使用
+		int Regen_hp, Regen_sec;	//记录文件中的回血数和时间间隔
+		int Regen_hp2, Regen_sec2;	//玩家当前设置选定的回血数和时间间隔
 		public string URL_app;
 		public int game_version;
+
+		public void err_close(int err_pos)
+		{
+			MessageBox.Show("Error! Pos="+err_pos.ToString());
+			System.Environment.Exit(0);
+		}
 
         //toCn=T-> EN->CN, F-> CN->EN 
         public string trans(string str, bool toCn)
@@ -101,6 +112,7 @@ namespace src
             }
         }
 
+		//火烧树模块功能函数
 		public string str_add(string str_up, string str_down)
 		{
 			string str;		//to save all
@@ -117,6 +129,7 @@ namespace src
 			return str;
 		}
 
+		//火烧树模块功能函数
 		public string str_rebuild()
 		{
 			int pos_begin, pos_end;
@@ -268,6 +281,236 @@ namespace src
             }
 		}
 
+		/*
+		 * *********************************************************
+		 * 本行进入天赋模块的功能函数
+		 */
+		
+		//通用函数,将文件读入字符串中
+		public string read_to_str(string file_name)
+		{ 			//string file_name = @"..\data\scripts\prefabs\evergreens.lua";
+			//exists? Evergreen.lua	
+			int err_pos = 1;
+			FileInfo file_chk = new FileInfo(file_name);
+			if (file_chk.Exists)
+			{
+				byte[] byData = new byte[FileLenthUpper];
+				char[] byChar = new char[FileLenthUpper];
+
+				try
+				{
+					FileStream aFile = new FileStream(file_name, FileMode.Open);
+					//FileStream aFile = new FileStream("test.txt", FileMode.Open);
+					//aFile.Seek(1, SeekOrigin.Begin);
+					aFile.Read(byData, 0, (int)aFile.Length);
+					aFile.Close();
+				}
+				catch (IOException err)
+				{
+					MessageBox.Show("An IO error has been thrown! pos=" + err_pos.ToString());
+					MessageBox.Show("Error Message:\r\n" + err.ToString());
+					System.Environment.Exit(0);
+				}
+
+				Decoder d = Encoding.UTF8.GetDecoder();
+				d.GetChars(byData, 0, byData.Length, byChar, 0);
+				string str = new string(byChar);
+				str = str.TrimEnd('\0');					//这句是关键.去除字符串莫非的\0,通过互联网解决.
+				//MessageBox.Show(str.Length.ToString());
+				//textBox1.Text = str;
+				return str;
+				//
+				//textBox1.Text = str ;
+				//MessageBox.Show(Str_full.Length.ToString());
+
+			}
+			else
+			{
+				err_close(err_pos);
+				return null;
+			}
+		
+		}
+
+		//通用函数,将字符串写入文件中
+		public void write_to_file(string towrite,string file_name)
+		{
+			//string towrite;
+			//string file_name = @"..\data\scripts\prefabs\evergreens.lua";
+			int err_pos = 2;
+			byte[] byData;
+            char[] byChar;
+
+            try
+            {
+                FileStream aFile = new FileStream(file_name, FileMode.Create);
+                byChar = towrite.ToCharArray();
+                //byChar = "test string.".ToCharArray();
+                byData = new byte[byChar.Length];
+                Encoder en = Encoding.UTF8.GetEncoder();
+                en.GetBytes(byChar, 0, byChar.Length, byData, 0, true);
+
+                //begin to write
+                aFile.Seek(0, SeekOrigin.Begin);
+                aFile.Write(byData, 0, byData.Length);
+                aFile.Close();
+
+            }
+            catch(IOException err) 
+            { 
+				MessageBox.Show("An IO error has been thrown! pos=" + err_pos.ToString());
+				MessageBox.Show("Error Message:\r\n" + err.ToString());
+				System.Environment.Exit(0);
+            }
+
+		}
+
+
+		//check if there is already auto blooding
+		public bool Regen_chk(string str)
+		{
+			string specialcode = "inst.components.health:StartRegen";
+			int pos;
+
+			pos = str.IndexOf(specialcode);
+			if (pos != -1)
+				return true;
+			else
+				return false;
+		}
+
+		//获取Regen里面的两个参数值
+		public void Regen_get(string str,out int hp, out int sec)
+		{	
+			//inst.components.health:StartRegen(hp,sec)"
+			string specialcode = "inst.components.health:StartRegen";
+			string str_hp, str_sec;
+			int pos_base;
+			int pos_left, pos_comma, pos_right;
+			pos_base = str.IndexOf(specialcode);
+			pos_left = str.IndexOf("(", pos_base + 1);
+			pos_comma = str.IndexOf(",", pos_left);
+			pos_right = str.IndexOf(")", pos_comma);
+			str_hp = str.Substring(pos_left + 1, pos_comma - pos_left - 1);
+			str_hp=str_hp.Trim();
+			str_sec = str.Substring(pos_comma + 1, pos_right - pos_comma - 1);
+			str_sec = str_sec.Trim();
+			hp = int.Parse(str_hp);
+			sec = int.Parse(str_sec);
+
+		}
+
+		//删除所有Regen行
+		public string Regen_del(string str)
+		{ 			string specialcode = "inst.components.health:StartRegen";
+			int pos_begin,pos_end;
+			string str_up, str_down;
+			//删除str中所有的StartRegen行
+			while (Regen_chk(str))
+			{
+				//本想用replace,但是不确定后面参数之间是否有空格.所以暂时先老老实实做吧
+				pos_begin = str.IndexOf(specialcode);
+				pos_end = str.IndexOf(")", pos_begin + 1);
+				str_up = str.Substring(0, pos_begin - 1);		
+				str_down = str.Substring(pos_end + 1);
+				str = str_up + str_down;
+			}
+			return str;	
+		
+		}
+
+		//将功能输入
+		public string Regen_set(string str, int hp, int sec)
+		{ 		
+			//string filename = @"..\data\scripts\prefabs\player_common.lua";
+			string specialcode = "inst.components.health:StartRegen";
+			string specialcode2 = "inst.components.health:SetMaxHealth(TUNING.WILSON_HEALTH)";
+			int pos_begin,pos_end;
+			string str_up, str_down;
+			//删除str中所有的StartRegen行
+			/*while (Regen_chk(str))
+			{
+				//本想用replace,但是不确定后面参数之间是否有空格.所以暂时先老老实实做吧
+				pos_begin = str.IndexOf(specialcode);
+				pos_end = str.IndexOf(")", pos_begin + 1);
+				str_up = str.Substring(0, pos_begin - 1);		
+				str_down = str.Substring(pos_end + 1);
+				str = str_up + str_down;
+			}*/
+			str = Regen_del(str);
+			//在特征串2下面插入
+			pos_begin = str.IndexOf(specialcode2);
+			pos_begin += specialcode2.Length+"\r\n".Length;
+			str_up = str.Substring(0, pos_begin);
+			str_down = str.Substring(pos_begin);
+			str = str_up  +"\t"+ specialcode + "(" + hp.ToString() + "," + sec.ToString() + ")" + str_down;
+			//write_to_file(str, filename);
+			return str;
+		}
+
+
+		//读取Regen功能
+		public void load_Regen()
+		{
+			string str;
+			string filename = @"..\data\scripts\prefabs\player_common.lua";
+			int hp, sec;
+			//try to open file
+			str = read_to_str(filename);
+			Str_Regen = str;
+			if (Regen_chk(str))
+			{
+				checkBox1.Checked = true;
+				Regen_get(str, out hp, out sec);
+				Regen_hp = hp;
+				Regen_sec = sec;
+				Regen_hp2 = hp;
+				Regen_sec2 = sec;
+				label6.Text = "当前" + sec.ToString() + "秒恢复" + hp.ToString() + "HP";
+			}
+			else
+			{
+				checkBox1.Checked = false;
+				Regen_sec = 0;
+				Regen_hp = 0;
+				Regen_sec2 = 0;
+				Regen_hp2 = 0;
+				label6.Text = "当前未启用自动加血";
+			}
+
+
+		}
+
+		public void load_Save2()
+		{ 
+			string fileRegen = @"..\data\scripts\prefabs\player_common.lua";
+			string str_regen;
+			//Regen Save
+			if (Regen_hp == Regen_hp2 & Regen_sec == Regen_sec2 )
+			{
+				//no need to save.
+			}
+			else
+			{
+				if (checkBox1.Checked)
+				{	//选中表示需要自动加血
+					str_regen = Regen_set(Str_Regen, Regen_hp2, Regen_sec2);
+				}
+				else
+				{	//未选中则删除自动加血代码行
+					str_regen = Regen_del(Str_Regen); 
+				}
+				write_to_file(str_regen, fileRegen);
+			}
+				button1.Text = "Saved!";
+				button1.Enabled = false;
+		}
+
+
+		/*
+		 * *********************************************************
+		 */
+
         public Mainform()
         {
             InitializeComponent();
@@ -278,21 +521,10 @@ namespace src
 			//load cn_set to listbox2
 			listBox2.Items.Clear();
         }
+		
+     
 
-       private void button2_Click(object sender, EventArgs e)
-        {
-           
-        }
-        
-        private void button3_Click(object sender, EventArgs e)
-        {
-           
-        }
-
-        private void button1_Click(object sender, EventArgs e)
-        {
-        }
-
+		//remove button
         private void button6_Click(object sender, EventArgs e)
         {
 			if (listBox1.SelectedItems.Count > 0)
@@ -304,6 +536,7 @@ namespace src
 
         }
 
+		//add button
 		private void button7_Click(object sender, EventArgs e)
 		{
 			if (listBox2.SelectedItems.Count > 0)
@@ -315,11 +548,6 @@ namespace src
 		}
 
 
-		private void label2_Click(object sender, EventArgs e)
-		{
-
-		}
-
 		private void timer1_Tick(object sender, EventArgs e)
 		{
 			timer1.Enabled = false;
@@ -330,19 +558,19 @@ namespace src
 			load_current_mTout();
 			//读入可以爆的列表.根据版本号读入支持的物品
 			load_ableOutList();
+			//天赋功能开始
+			//自动加血
+			load_Regen();
+			
+
+
 
 		}
 
-		private void groupBox1_Enter(object sender, EventArgs e)
-		{
-
-		}
 
 
-		private void listBox1_SelectedIndexChanged(object sender, EventArgs e)
-		{
-		}
 
+		//default button
 		private void button9_Click(object sender, EventArgs e)
 		{
 			if (listBox1.Items.Count > 0)
@@ -354,11 +582,94 @@ namespace src
 		}
 
 
+		//save button
 		private void button10_Click(object sender, EventArgs e)
 		{
 			//load to save
 			load_save();
 		}
+
+		//no use. only for basic test.
+		private void label5_Click(object sender, EventArgs e)
+		{
+			string filename = "test.txt";
+			//string filename2 = "test1.txt";
+			string str1 = "Apple";
+			write_to_file(str1, filename);
+			string str2 = "Banana";
+			MessageBox.Show(str2);
+			str2 = read_to_str(filename);
+			MessageBox.Show(str2);
+
+
+		}
+
+		private void trackBar1_Scroll(object sender, EventArgs e)
+		{
+			int hp, sec;
+			button1.Enabled = true;
+			button1.Text = "Save";
+			switch (trackBar1.Value)
+			{
+ 				case 0:
+					hp= Regen_hp;
+					sec= Regen_sec;
+					break;
+				case 1:
+					hp = 1;
+					sec = 30;
+					break;
+				case 2:
+					hp = 1;
+					sec = 3;
+					break;
+				case 3:
+					hp = 10;
+					sec = 1;
+					break;
+				case 4:
+					hp = 50;
+					sec = 1;
+					break;
+				default:
+					hp = Regen_hp;
+					sec = Regen_sec;
+					break;
+			}
+			if (hp * sec == 0 | checkBox1.Checked==false)
+			{
+				label6.Text = "当前未启用自动加血";
+			}
+			else 
+			{ 
+				label6.Text = "当前" + sec.ToString() + "秒恢复" + hp.ToString() + "HP";
+			}
+			Regen_hp2 = hp;
+			Regen_sec2 = sec;
+		}
+
+		private void checkBox1_CheckedChanged(object sender, EventArgs e)
+		{
+			int hp = Regen_hp2;
+			int sec = Regen_sec2;
+			button1.Enabled = true;
+			button1.Text = "Save";
+			if (hp * sec == 0 | checkBox1.Checked==false)
+			{
+				label6.Text = "当前未启用自动加血";
+			}
+			else 
+			{ 
+				label6.Text = "当前" + sec.ToString() + "秒恢复" + hp.ToString() + "HP";
+			}
+		}
+
+		//Tab 天赋, save button.
+		private void button1_Click(object sender, EventArgs e)
+		{
+			load_Save2();
+		}
+
 
 
 		

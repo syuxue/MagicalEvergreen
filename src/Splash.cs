@@ -87,5 +87,10 @@ namespace src
 			fm.URL_app = System.Environment.CurrentDirectory;
 			fm.game_version = game_version;
 		}
+
+		private void pictureBox1_Click(object sender, EventArgs e)
+		{
+
+		}
 	}
 }
